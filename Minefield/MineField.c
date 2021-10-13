@@ -145,6 +145,7 @@ uint16_t* repeatValueBomb(uint16_t* memoryVetBomb, uint16_t getNumberBomb, uint1
 			if (memoryVetBomb[i] == memoryVetBomb[j]) {
 				setNumberBomb = rand() % numberMaxBomb;
 				memoryVetBomb[j] = setNumberBomb;
+				j = 0;
 			}
 		}
 	}
@@ -202,12 +203,10 @@ int clickToPlay(void) {
 	//Setando as localizações iniciais das bombas
 	memoryVetBomb = setMineBomb(memoryVetBomb, getNumberBomb, numberMaxBomb);
 	
-	//Bloco de verificação para localização da bomba (triple check)
-	//O tripple check está sendo utilizado pois ao percorrer o array, nas posições j buscando um valor em i,
-	//é possível que seja feito uma troca por números que já tenha sido verificados
+	//Bloco de verificação para localização da bomba (double check)
+	//Utilização de double check para garantir que nenhum número seja repetido
 	memoryVetBomb = repeatValueBomb(memoryVetBomb, getNumberBomb, numberMaxBomb); //Check 1
 	memoryVetBomb = repeatValueBomb(memoryVetBomb, getNumberBomb, numberMaxBomb); //Check 2
-	memoryVetBomb = repeatValueBomb(memoryVetBomb, getNumberBomb, numberMaxBomb); //Check 3
 	
 	//Alocando espaço para memória da matriz
 	memoryMatrix = setMemoryMatrix(getAxis_Y, getAxis_X);
@@ -221,7 +220,7 @@ int clickToPlay(void) {
 
 	/////////////////////////////////////EXISTE UM POSSÍVEL ERRO DE LÓGICA NAS LINHAS A SEGUIR////////////////////////////////////////////////////
 	/////////////////////////////////////////////         CORRIGIR         ///////////////////////////////////////////////////////////////////////
-
+	//OBS: As linhas a seguir podem ser simplificadas com loop, no entanto, para melhor visualização, os casos foram individualmente linha por linha
 	for (i = 0; i < getAxis_Y; i++) {
 		for (j = 0; j < getAxis_X; j++) {
 
