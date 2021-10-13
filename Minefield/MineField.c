@@ -325,35 +325,7 @@ int clickToPlay(void) {
 					memoryMatrix[i][j--]++;
 				}
 			}
-			
-			//Trata os casos do miolo da matriz podendo mover para i++,i--, j++, j--
-			else {
 
-				if (memoryMatrix[i++][j] != '*') {
-					memoryMatrix[i++][j]++;
-				}
-				if (memoryMatrix[i++][j++] != '*') {
-					memoryMatrix[i--][j++]++;
-				}
-				if (memoryMatrix[i++][j--] != '*') {
-					memoryMatrix[i++][j--]++;
-				}
-				if (memoryMatrix[i--][j] != '*') {
-					memoryMatrix[i--][j] ++;
-				}
-				if (memoryMatrix[i--][j++] != '*') {
-					memoryMatrix[i--][j++]++;
-				}
-				if (memoryMatrix[i--][j--] != '*') {
-					memoryMatrix[i--][j--] ++;
-				}
-				if (memoryMatrix[i][j++] != '*') {
-					memoryMatrix[i][j++]++;
-				}
-				if (memoryMatrix[i][j--] != '*') {
-					memoryMatrix[i][j--]++;
-				}
-			}
 		}
 	}
 
