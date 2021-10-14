@@ -45,7 +45,7 @@ void apresentation(void) {
 
 //Struct para Lista encadeada que varrerá as posições buscando o melhor caminho.
 typedef struct setGoodWay_s {
-	uint8_t** setPositionInit;
+	uint16_t** setPositionInit;
 	struct setGoodWay_t* setPositionNext;
 } setGoodWay;
 
@@ -53,7 +53,7 @@ typedef struct setGoodWay_s {
 typedef struct setGoodWay_t goodWayNext;
 
 //Função para realizar a busca do melhor caminho
-void showMeAGoodWay(uint8_t** fieldOfBomb) {
+void showMeAGoodWay(uint16_t** fieldOfBomb) {
 	/*
 	  Passo 1 - Receber o endereço da matriz em uma posição inicial
 	  Passo 2 - Verificar se a posição da matriz com +/- 1 no X e +/- 1 no Y possuem valores <= 1 
@@ -73,12 +73,12 @@ void showMeAGoodWay(uint8_t** fieldOfBomb) {
 
 
 //Função para aloca as linhas da matriz
-uint8_t** setMemoryMatrix(uint8_t setAxis_Y, uint8_t setAxis_X){
+uint16_t** setMemoryMatrix(uint16_t setAxis_Y, uint16_t setAxis_X){
 	//Variável utilizada
-	uint8_t i,j;
+	uint16_t i,j;
 
 	//Alocando a memória necessária para o eixo X
-	uint8_t ** setMemoryMatrix = (uint8_t**)malloc(setAxis_Y * sizeof(uint8_t));
+	uint16_t ** setMemoryMatrix = (uint16_t**)malloc(setAxis_Y * sizeof(uint16_t));
 
 	if (setMemoryMatrix == NULL) {
 		perror("ERROR: Impossível alocar memoria");
@@ -87,7 +87,7 @@ uint8_t** setMemoryMatrix(uint8_t setAxis_Y, uint8_t setAxis_X){
 	{
 		for (i = 0; i < setAxis_Y; i++) {
 			//Alocando um y colunas para cada linha
-			setMemoryMatrix[i] = (uint8_t*)malloc(setAxis_X * sizeof(uint8_t));
+			setMemoryMatrix[i] = (uint16_t*)malloc(setAxis_X * sizeof(uint16_t));
 			if (setMemoryMatrix[i] == NULL) {
 				perror("ERROR: Impossível alocar memoria");
 			}
@@ -104,7 +104,7 @@ uint8_t** setMemoryMatrix(uint8_t setAxis_Y, uint8_t setAxis_X){
 	return setMemoryMatrix;
 }
 
-//Função para alocar a matriz da bomba
+//Função para alocar o vetor da bomba
 uint16_t* setMemoryBomb(uint16_t setMaxBomb) {
 	//Alocando memória
 	uint16_t * setMemoryMaxBomb = (uint16_t*)malloc(setMaxBomb * sizeof(uint16_t));
@@ -122,7 +122,7 @@ uint16_t* setMemoryBomb(uint16_t setMaxBomb) {
 uint16_t* setMineBomb(uint16_t * memoryVetBomb, uint16_t getNumberBomb, uint16_t numberMaxBomb) {
 	//Variável utilizada
 	uint16_t setNumberBomb;
-	uint8_t i;
+	uint16_t i;
 
 	//Atribuindo as posições da bomba
 	for (i = 0; i < getNumberBomb; i++) {
@@ -137,7 +137,7 @@ uint16_t* setMineBomb(uint16_t * memoryVetBomb, uint16_t getNumberBomb, uint16_t
 uint16_t* repeatValueBomb(uint16_t* memoryVetBomb, uint16_t getNumberBomb, uint16_t numberMaxBomb) {
 	//Variável utilizada
 	uint16_t setNumberBomb;
-	uint8_t i, j;
+	uint16_t i, j;
 	
 	//Processo de verificação
 	for (i = 0; i < getNumberBomb; i++) {
@@ -156,8 +156,9 @@ uint16_t* repeatValueBomb(uint16_t* memoryVetBomb, uint16_t getNumberBomb, uint1
 //Função Play: Todas as chamadas de funções de suporte e desenvolvimento do game estão aqui
 int clickToPlay(void) {
 	//Variáveis
-	uint8_t getAxis_Y, getAxis_X, i, j, numberMaxBomb, positionBomb_X, positionBomb_Y, countBomb =0;
-	uint8_t** memoryMatrix;
+	uint16_t getAxis_Y, getAxis_X, numberMaxBomb, positionBomb_X, positionBomb_Y, auxCountBomb = 0;
+	uint16_t i, j, k, l; //Variáveis para o auxiliar nos loops
+	uint16_t** memoryMatrix;
 	uint16_t* memoryVetBomb;
 	uint16_t getNumberBomb;
 
@@ -165,7 +166,7 @@ int clickToPlay(void) {
 	do {
 		printf("Por favor, informe no logo abaixo o numero de linhas que o campo deve ter [VALOR MAXIMO = 256]\n");
 		printf("Numero de linhas: ");
-		scanf("%hhd", &getAxis_Y);
+		scanf("%hd", &getAxis_Y);
 
 		//Tratamento de erro: Possibilidade de entrada inválida. Teste de valor
 		if (getAxis_Y < NUM_MINIMO_EIXO || getAxis_Y > NUM_MAXIMO_EIXO) {
@@ -177,7 +178,7 @@ int clickToPlay(void) {
 	do{
 		printf("Agora, digite a quantidade de colunas que [VALOR MAXIMO = 256]\n");
 		printf("Numero de Colunas:");
-		scanf("%hhd", &getAxis_X);
+		scanf("%hd", &getAxis_X);
 		
 		//Tratamento de erro: Possibilidade de entrada inválida. Teste de valor
 		if (getAxis_X < NUM_MINIMO_EIXO || getAxis_X > NUM_MAXIMO_EIXO) {
@@ -192,7 +193,7 @@ int clickToPlay(void) {
 	do {
 		printf("Por favor, informe a quantidade de bombas que deseja distribuir no campo, leve em consideração as seguintes informações \n");
 		printf("[VALOR MINIMO %d]\n", NUM_MINIMO_BOMBA);
-		printf("[VALOR MAXIMO %hhd]\n", (numberMaxBomb-1));
+		printf("[VALOR MAXIMO %hd]\n", (numberMaxBomb-1));
 		printf("Numero de bombas:");
 		scanf("%hd", &getNumberBomb);
 	} while ((getNumberBomb >= numberMaxBomb) || (getNumberBomb < NUM_MINIMO_BOMBA));
@@ -223,112 +224,90 @@ int clickToPlay(void) {
 	//OBS: As linhas a seguir podem ser simplificadas com loop, no entanto, para melhor visualização, os casos foram individualmente linha por linha
 	for (i = 0; i < getAxis_Y; i++) {
 		for (j = 0; j < getAxis_X; j++) {
-
-			//Trata casos na extremidade inicial onde i++,j++
-			if (memoryMatrix[i][j] == '*' && i == 0 && j == 0) {
-				if (memoryMatrix[i++][j] != '*') {
-					memoryMatrix[i++][j]++;
-				}
-				if (memoryMatrix[i][j++] != '*'){
-					memoryMatrix[i][j++]++;
-				}
-				if (memoryMatrix[i++][j++] != '*') {
-					memoryMatrix[i++][j++]++;
+			if (memoryMatrix[i][j] == '*' && (i == 0) && (j == 0)) {
+				for (k = i; k == (i + 1); k++) {
+					for (l = j; l == (j + 1); l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
 				}
 			}
-
-			//Trata casos nas extremidades finais onde j--, i--
-			else if (memoryMatrix[i][j] == '*' && i == (getAxis_Y-1) && j == (getAxis_X-1)) {
-				if (memoryMatrix[i][j--] != '*') {
-					memoryMatrix[i][j--] ++;
-				}
-				if (memoryMatrix[i--][j--] != '*') {
-					memoryMatrix[i--][j--]++;
-				}
-				if (memoryMatrix[i--][j] != '*') {
-					memoryMatrix[i--][j] ++;
+			else if (memoryMatrix[i][j] == '*' && (i == 0) && (j < (getAxis_X - 1))) {
+				for (k = i; k == (i + 1); k++) {
+					for (l = (j - 1); l == (j + 1); l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
 				}
 			}
-
-			//Trata as possibilidades de bombas na primeira coluna
-			else if (memoryMatrix[i][j] == '*' && j == 0 && i != (getAxis_Y - 1) && i > 0) {
-				if (memoryMatrix[i++][j] != '*') {
-					memoryMatrix[i++][j]++;
-				}
-				if (memoryMatrix[i++][j++] != '*') {
-					memoryMatrix[i++][j++]++;
-				}
-				if (memoryMatrix[i][j++] != '*') {
-					memoryMatrix[i][j++]++;
-				}
-				if (memoryMatrix[i--][j] != '*') {
-					memoryMatrix[i--][j]++;
-				}
-				if (memoryMatrix[i--][j++] != '*') {
-					memoryMatrix[i--][j++]++;
+			else if (memoryMatrix[i][j] == '*' && (i == 0) && (j == (getAxis_X - 1))) {
+				for (k = i; k == (i + 1); k++) {
+					for (l = (j - 1); l == j; l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
 				}
 			}
-
-			//Trata as possibilidades de bombas na ultima coluna
-			else if (memoryMatrix[i][j] == '*' && j == (getAxis_X - 1) && i != (getAxis_Y - 1) && i > 0) {
-				if (memoryMatrix[i][j--] != '*') {
-					memoryMatrix[i][j--]++;
-				}
-				if (memoryMatrix[i--][j] != '*') {
-					memoryMatrix[i--][j]++;
-				}
-				if (memoryMatrix[i--][j--] != '*') {
-					memoryMatrix[i--][j--]++;
-				}
-				if (memoryMatrix[i++][j] != '*') {
-					memoryMatrix[i++][j]++;
-				}
-				if (memoryMatrix[i++][j--] != '*') {
-					memoryMatrix[i++][j--]++;
+			else if (memoryMatrix[i][j] == '*' && (i < (getAxis_Y - 1)) && (j == (getAxis_X - 1))) {
+				for (k = (i - 1); k == (i + 1); k++) {
+					for (l = (j - 1); l == j; l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
 				}
 			}
-
-			//Trata as possibilidades de bomba na primeira linha 
-			else if (memoryMatrix[i][j] == '*' && i == 0 && j > 0 && j > getAxis_X) {
-				if (memoryMatrix[i][j++] != '*') {
-					memoryMatrix[i][j++]++;
-				}
-				if (memoryMatrix[i++][j] != '*') {
-					memoryMatrix[i++][j]++;
-				}
-				if (memoryMatrix[i++][j++] != '*') {
-					memoryMatrix[i++][j++]++;
-				}
-				if (memoryMatrix[i++][j--] != '*') {
-					memoryMatrix[i++][j--]++;
-				}
-				if (memoryMatrix[i][j--] != '*') {
-					memoryMatrix[i][j--]++;
+			else if (memoryMatrix[i][j] == '*' && (i == (getAxis_Y - 1)) && (j == (getAxis_X -1)) ) {
+				for (k = (i - 1); k == i; k++) {
+					for (l = (j - 1); l == j; l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
 				}
 			}
-
-			//Trata as possibilidades de bomba na ultima linha 
-			else if (memoryMatrix[i][j] == '*' && i == (getAxis_Y - 1) && j > 0 && j > getAxis_X) {
-				if (memoryMatrix[i][j++] != '*') {
-					memoryMatrix[i][j++]++;
-				}
-				if (memoryMatrix[i--][j] != '*') {
-					memoryMatrix[i--][j]++;
-				}
-				if (memoryMatrix[i--][j++] != '*') {
-					memoryMatrix[i--][j++]++;
-				}
-				if (memoryMatrix[i--][j--] != '*') {
-					memoryMatrix[i--][j--]++;
-				}
-				if (memoryMatrix[i][j--] != '*') {
-					memoryMatrix[i][j--]++;
+			else if (memoryMatrix[i][j] == '*' && (i == (getAxis_Y - 1) && (j > 0 ))) {
+				for (k = (i - 1); k == i; k++) {
+					for (l = (j - 1); l == (j + 1); l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
 				}
 			}
-
+			else if (memoryMatrix[i][j] == '*' && (i == (getAxis_Y - 1) && (j == 0))) {
+				for (k = (i - 1); k == i; k++) {
+					for (l = j; l == (j + 1); l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
+				}
+			}
+			else if (memoryMatrix[i][j] == '*' && (i > 0) && (j == 0)) {
+				for (k = (i - 1); k == (i + 1); k++) {
+					for (l = j; l == (j + 1); l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
+				}
+			}
+			else if (memoryMatrix[i][j] == '*') {
+				for (k = (i - 1); k == (i + 1); k++) {
+					for (l = (j - 1); l == (j + 1); l++) {
+						if (memoryMatrix[k][l] != '*') {
+							memoryMatrix[k][l]++;
+						}
+					}
+				}
+			}
 		}
 	}
-
+	
 	/////////////////////////////////////////////         CORRIGIR         ///////////////////////////////////////////////////////////////////////
 	
 	//Imprimir a matriz	
